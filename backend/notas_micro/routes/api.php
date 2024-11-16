@@ -3,6 +3,15 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\EstudianteController;
+
+// Ruta para listar estudiantes
+Route::get('/estudiantes', [EstudianteController::class, 'index']);
+
+// Ruta para registrar un estudiante
+Route::post('/estudiantes', [EstudianteController::class, 'store']);
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes

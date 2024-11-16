@@ -1,0 +1,15 @@
+# Probar el listado de estudiantes
+GET http://127.0.0.1:8000/api/estudiantes
+Content-Type: application/json
+
+###
+
+# Probar el registro de un estudiante
+POST http://127.0.0.1:8000/api/estudiantes
+Content-Type: application/json
+
+{
+  "cod": 7890,
+  "nombres": "Juan Pérez",
+  "email": "juanperez@test.com"
+}
