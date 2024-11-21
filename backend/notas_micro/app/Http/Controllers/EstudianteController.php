@@ -7,32 +7,72 @@ use Illuminate\Http\Request;
 
 class EstudianteController extends Controller
 {
-    // Función para listar los estudiantes
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $estudiantes = Estudiante::all();
-
-        return response()->json([
-            'estudiantes' => $estudiantes,
-        ], 200);
+        $rows = Estudiante::all(); // Obtener todos los registros
+        $data = ["data" => $rows];
+        return response()->json($data, 200); // Respuesta exitosa con datos
     }
 
-    // Función para registrar un estudiante
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        // Validar los datos recibidos
-        $request->validate([
-            'cod' => 'required|integer|unique:estudiantes',
-            'nombres' => 'required|string|max:250',
-            'email' => 'required|email|unique:estudiantes',
-        ]);
+        $dataBody = $request->all(); // Captura todos los datos enviados
+        $estudiante = new Estudiante();
+        $estudiante->cod = $dataBody['cod'];
+        $estudiante->nombres = $dataBody['nombres'];
+        $estudiante->email = $dataBody['email'];
+        $estudiante->save(); // Guarda el estudiante en la base de datos
+        $data = ["data" => $estudiante];
+        return response()->json($data, 201); // Respuesta con código 201 (creado)
+    }
 
-        // Crear el estudiante
-        $estudiante = Estudiante::create($request->all());
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $row = Estudiante::find($id); // Buscar estudiante por ID
+        if (empty($row)) {
+            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no existe
+        }
+        $data = ["data" => $row];
+        return response()->json($data, 200); // Respuesta exitosa con datos
+    }
 
-        return response()->json([
-            'message' => 'Estudiante registrado con éxito.',
-            'estudiante' => $estudiante,
-        ], 201);
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $dataBody = $request->all(); // Captura los datos enviados
+        $estudiante = Estudiante::find($id); // Buscar estudiante por ID
+        if (empty($estudiante)) {
+            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no existe
+        }
+        $estudiante->cod = $dataBody['cod'];
+        $estudiante->nombres = $dataBody['nombres'];
+        $estudiante->email = $dataBody['email'];
+        $estudiante->save(); // Actualiza el estudiante
+        $data = ["data" => $estudiante];
+        return response()->json($data, 200); // Respuesta exitosa con datos
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $row = Estudiante::find($id); // Buscar estudiante por ID
+        if (empty($row)) {
+            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no existe
+        }
+        $row->delete(); // Elimina el estudiante
+        return response()->json(["msg" => "Estudiante eliminado"], 200); // Respuesta exitosa
     }
 }

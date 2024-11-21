@@ -1,15 +1,82 @@
-# Probar el listado de estudiantes
+### Obtener Todos los Estudiantes
 GET http://127.0.0.1:8000/api/estudiantes
 Content-Type: application/json
 
 ###
 
-# Probar el registro de un estudiante
+### Crear Estudiante
 POST http://127.0.0.1:8000/api/estudiantes
 Content-Type: application/json
 
 {
-  "cod": 7890,
-  "nombres": "Juan Pérez",
-  "email": "juanperez@test.com"
+    "cod": "1111",
+    "nombres": "Santiago Arevalo",
+    "email": "santi@email.com"
 }
+
+###
+
+### Obtener Estudiante por ID
+GET http://127.0.0.1:8000/api/estudiantes/1111
+Content-Type: application/json
+
+###
+
+### Actualizar Estudiante
+PUT http://127.0.0.1:8000/api/estudiantes/2222
+Content-Type: application/json
+
+{
+    "cod": "1222",
+    "nombres": "Juan Castillo",
+    "email": "juanp@email.com"
+}
+
+###
+
+### Eliminar Estudiante
+DELETE http://127.0.0.1:8000/api/estudiantes/1233
+Content-Type: application/json
+
+
+### Listar todas las notas
+GET http://127.0.0.1:8000/api/notas
+Accept: application/json
+
+###
+
+### Crear una nueva nota
+POST http://127.0.0.1:8000/api/notas
+Content-Type: application/json
+Accept: application/json
+
+{
+  "actividad": "Proyecto prueba",
+  "nota": 4.5,
+  "codEstudiante": 1234
+}
+
+###
+
+### Ver una nota específica
+GET http://127.0.0.1:8000/api/notas/1
+Accept: application/json
+
+###
+
+### Actualizar una nota existente
+PUT http://127.0.0.1:8000/api/notas/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "actividad": "Proyecto Final Modificado",
+  "nota": 3.8,
+  "codEstudiante": 1234
+}
+
+###
+
+### Eliminar una nota
+DELETE http://127.0.0.1:8000/api/notas/1
+Accept: application/json
