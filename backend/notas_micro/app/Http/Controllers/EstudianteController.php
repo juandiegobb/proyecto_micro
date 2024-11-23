@@ -32,6 +32,8 @@ class EstudianteController extends Controller
         return response()->json($data, 201); // Respuesta con código 201 (creado)
     }
 
+
+
     /**
      * Display the specified resource.
      */
@@ -39,7 +41,7 @@ class EstudianteController extends Controller
     {
         $row = Estudiante::find($id); // Buscar estudiante por ID
         if (empty($row)) {
-            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no existe
+            return response()->json(["msg" => "Estudiante no encontrado :((..."], 404); // Error 404 si no existe
         }
         $data = ["data" => $row];
         return response()->json($data, 200); // Respuesta exitosa con datos
@@ -63,6 +65,7 @@ class EstudianteController extends Controller
         return response()->json($data, 200); // Respuesta exitosa con datos
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
@@ -70,9 +73,33 @@ class EstudianteController extends Controller
     {
         $row = Estudiante::find($id); // Buscar estudiante por ID
         if (empty($row)) {
-            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no existe
+            return response()->json(["msg" => "Estudiante no encontrado, registre nuevamente el codigo"], 404); // Error 404 si no existe
         }
         $row->delete(); // Elimina el estudiante
         return response()->json(["msg" => "Estudiante eliminado"], 200); // Respuesta exitosa
     }
+
+    /**
+ * Generar un resumen de estudiantes con sus notas.
+ */
+public function resumen()
+{
+    // Cargar todos los estudiantes con sus notas
+    $estudiantes = Estudiante::with('notas')->get();
+
+    // Filtrar los estudiantes
+    $aprobados = $estudiantes->filter(fn($e) => $e->notas->avg('nota') >= 3)->count();
+    $reprobados = $estudiantes->filter(fn($e) => $e->notas->isNotEmpty() && $e->notas->avg('nota') < 3)->count();
+    $sinNotas = $estudiantes->filter(fn($e) => $e->notas->isEmpty())->count();
+
+    // Responder con el resumen
+    return response()->json([
+        "aprobados" => $aprobados,
+        "reprobados" => $reprobados,
+        "sin_notas" => $sinNotas,
+    ], 200);
+}
+
+
+
 }
