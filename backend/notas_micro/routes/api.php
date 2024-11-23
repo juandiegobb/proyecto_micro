@@ -28,12 +28,15 @@ Route::prefix('estudiantes')->group(function () {
     Route::delete('/{id}', [EstudianteController::class, 'destroy']); // Eliminar un estudiante
 });
 
-Route::get('/estudiantes/resumen', [EstudianteController::class, 'resumen']);
-//Route::get('/notas/resumen', [NotaController::class, 'resumen']);
+
 
 // Rutas para el CRUD de notas
-Route::get('/notas', [NotaController::class, 'index']); // Listar todas las notas
-Route::post('/notas', [NotaController::class, 'store']); // Crear una nueva nota
-Route::get('/notas/{id}', [NotaController::class, 'show']); // Ver una nota específica
-Route::put('/notas/{id}', [NotaController::class, 'update']); // Actualizar una nota
-Route::delete('/notas/{id}', [NotaController::class, 'destroy']); // Eliminar una nota
+Route::prefix('notas')->group(function () {
+    Route::get('/', [NotaController::class, 'index']); // Listar todas las notas
+    Route::post('/', [NotaController::class, 'store']); // Crear una nueva nota
+    Route::get('/filter', [NotaController::class, 'filter']); // Filtrar notas
+    Route::get('/resumen', [NotaController::class, 'resumen']); // Resumen de notas
+    Route::get('/{id}', [NotaController::class, 'show']); // Mostrar una nota específica
+    Route::put('/{id}', [NotaController::class, 'update']); // Actualizar una nota
+    Route::delete('/{id}', [NotaController::class, 'destroy']); // Eliminar una nota
+});

@@ -9,15 +9,15 @@ POST http://127.0.0.1:8000/api/estudiantes
 Content-Type: application/json
 
 {
-  "cod": "1156",
-  "email": "san654@email.com",
-  "nombres": "santiago"
+  "cod": "9991",
+  "email": "usuarioprueba@email.com",
+  "nombres": "usuario"
 }
 
 ###
 
 ### Obtener Estudiante por ID
-GET http://127.0.0.1:8000/api/estudiantes/1234
+GET http://127.0.0.1:8000/api/estudiantes/9991
 Content-Type: application/json
 
 ###
@@ -27,8 +27,8 @@ PUT http://127.0.0.1:8000/api/estudiantes/1155
 Content-Type: application/json
 
 {
-    "cod": "1155",
-    "nombres": "Juan diego Castillo",
+    "cod": "1159",
+    "nombres": "Juan Castillo",
     "email": "juandiego@email.com"
 }
 
@@ -36,6 +36,10 @@ Content-Type: application/json
 
 ### Eliminar Estudiante
 DELETE http://127.0.0.1:8000/api/estudiantes/5522
+Content-Type: application/json
+
+### Resumen de estudiantes
+GET http://127.0.0.1:8000/api/estudiantes/resumen
 Content-Type: application/json
 
 
@@ -53,7 +57,7 @@ Accept: application/json
 {
   "actividad": "Proyecto prueba 2",
   "nota": 2.0,
-  "codEstudiante": 1111
+  "codEstudiante": 5522
 }
 
 ###
@@ -78,28 +82,41 @@ Accept: application/json
 ###
 
 ### Eliminar una nota
-DELETE http://127.0.0.1:8000/api/notas/5
+DELETE http://127.0.0.1:8000/api/notas/2
 Accept: application/json
 
-### Resumen de estudiantes
-GET http://127.0.0.1:8000/api/estudiantes/resumen
+
+
+### Listar las notas de un estudiante con promedio
+GET http://127.0.0.1:8000/api/notas/estudiante/9991
 Content-Type: application/json
 
-###
+### Filtrar notas por actividad
+GET http://127.0.0.1:8000/api/notas/filter?actividad=Proyecto
+Content-Type: application/json
+
+### filtrar  por rango de notas
+GET http://127.0.0.1:8000/api/notas/filter?rango_min=2&rango_max=4
+Content-Type: application/json
+
+### filtrar notas por actividad y rango
+GET http://127.0.0.1:8000/api/notas/filter?actividad=Proyecto&rango_min=3&rango_max=5
+Content-Type: application/json
+
 
 ### Resumen de notas
 GET http://127.0.0.1:8000/api/notas/resumen
 Content-Type: application/json
 
 ### Filtrar por código
-GET http://127.0.0.1:8000/api/estudiantes/filter?cod=1234
+GET http://127.0.0.1:8000/api/estudiantes/filter?cod=1111
 
 
 ### Filtrar por nombre
-GET http://127.0.0.1:8000/api/estudiantes/filter?nombres=Juan
+GET http://127.0.0.1:8000/api/estudiantes/filter?nombres=Santiago Arevalo
 
 ### Filtrar por email
-GET http://127.0.0.1:8000/api/estudiantes/filter?email=juan.perez
+GET http://127.0.0.1:8000/api/estudiantes/filter?email=santiiii@email.com
 
 ### Filtrar por estudiantes aprobados
 GET http://127.0.0.1:8000/api/estudiantes/filter?estado=aprobado
