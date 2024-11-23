@@ -9,9 +9,9 @@ POST http://127.0.0.1:8000/api/estudiantes
 Content-Type: application/json
 
 {
-    "cod": "5522",
-    "nombres": "usuario",
-    "email": "usuario@email.com"
+  "cod": "1234",
+  "email": "correo@dominio.com",
+  "nombres": "Juan Pérez"
 }
 
 ###
@@ -23,11 +23,11 @@ Content-Type: application/json
 ###
 
 ### Actualizar Estudiante
-PUT http://127.0.0.1:8000/api/estudiantes/3333
+PUT http://127.0.0.1:8000/api/estudiantes/1155
 Content-Type: application/json
 
 {
-    "cod": "3333",
+    "cod": "1155",
     "nombres": "Juan diego Castillo",
     "email": "juandiego@email.com"
 }
@@ -35,7 +35,7 @@ Content-Type: application/json
 ###
 
 ### Eliminar Estudiante
-DELETE http://127.0.0.1:8000/api/estudiantes/3333
+DELETE http://127.0.0.1:8000/api/estudiantes/5522
 Content-Type: application/json
 
 
