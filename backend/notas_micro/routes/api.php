@@ -21,12 +21,11 @@ use App\Http\Controllers\NotaController;
 Route::prefix('estudiantes')->group(function () {
     Route::get('/', [EstudianteController::class, 'index']); // Listar todos los estudiantes
     Route::post('/', [EstudianteController::class, 'store']); // Crear un nuevo estudiante
+    Route::get('/filter', [EstudianteController::class, 'filter']); // Filtrar estudiantes
+    Route::get('/resumen', [EstudianteController::class, 'resumen']); // Resumen de estudiantes
     Route::get('/{id}', [EstudianteController::class, 'show']); // Mostrar un estudiante específico
     Route::put('/{id}', [EstudianteController::class, 'update']); // Actualizar un estudiante
     Route::delete('/{id}', [EstudianteController::class, 'destroy']); // Eliminar un estudiante
-    Route::get('/buscar', [EstudianteController::class, 'search']); // Buscar estudiantes con filtros
-    Route::get('/estadisticas', [EstudianteController::class, 'statistics']); // Mostrar resumen de estadísticas
-    Route::get('/estudiantes/resumen', [EstudianteController::class, 'resumen']); // Ruta para el resumen
 });
 
 Route::get('/estudiantes/resumen', [EstudianteController::class, 'resumen']);

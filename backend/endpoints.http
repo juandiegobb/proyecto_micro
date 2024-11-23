@@ -9,9 +9,9 @@ POST http://127.0.0.1:8000/api/estudiantes
 Content-Type: application/json
 
 {
-  "cod": "1234",
-  "email": "correo@dominio.com",
-  "nombres": "Juan Pérez"
+  "cod": "1156",
+  "email": "san654@email.com",
+  "nombres": "santiago"
 }
 
 ###
@@ -91,3 +91,26 @@ Content-Type: application/json
 GET http://127.0.0.1:8000/api/notas/resumen
 Content-Type: application/json
 
+### Filtrar por código
+GET http://127.0.0.1:8000/api/estudiantes/filter?cod=1234
+
+
+### Filtrar por nombre
+GET http://127.0.0.1:8000/api/estudiantes/filter?nombres=Juan
+
+### Filtrar por email
+GET http://127.0.0.1:8000/api/estudiantes/filter?email=juan.perez
+
+### Filtrar por estudiantes aprobados
+GET http://127.0.0.1:8000/api/estudiantes/filter?estado=aprobado
+
+### Filtrar por estudiantes sin notas
+GET http://127.0.0.1:8000/api/estudiantes/filter?sin_notas=true
+
+
+### Filtrar por rango de notas
+GET http://127.0.0.1:8000/api/estudiantes/filter?rango_min=2&rango_max=4
+
+
+### Filtrar combinando varios campos
+GET http://127.0.0.1:8000/api/estudiantes/filter?cod=12345&nombres=Juan&rango_min=2&rango_max=4

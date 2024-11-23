@@ -83,13 +83,13 @@ class EstudianteController extends Controller
         // Verificar si el código de estudiante ya existe (si no es el mismo estudiante)
         $codExistente = Estudiante::where('cod', $dataBody['cod'])->where('id', '!=', $id)->first();
         if ($codExistente) {
-            return response()->json(["msg" => "El código de estudiante ya existe."], 400); // Error 400 si el código ya existe
+            return response()->json(["msg" => "El codigo de estudiante ya existe."], 400); // Error 400 si el código ya existe
         }
 
         // Verificar si el email ya existe (si no es el mismo estudiante)
         $emailExistente = Estudiante::where('email', $dataBody['email'])->where('id', '!=', $id)->first();
         if ($emailExistente) {
-            return response()->json(["msg" => "El correo electrónico ya está registrado."], 400); // Error 400 si el email ya existe
+            return response()->json(["msg" => "El correo electronico ya está registrado."], 400); // Error 400 si el email ya existe
         }
 
         // Verificar el formato del email
@@ -122,8 +122,8 @@ class EstudianteController extends Controller
     /**
  * Generar un resumen de estudiantes con sus notas.
  */
-public function resumen()
-{
+    public function resumen()
+    {
     // Cargar todos los estudiantes con sus notas
     $estudiantes = Estudiante::with('notas')->get();
 
@@ -138,7 +138,67 @@ public function resumen()
         "reprobados" => $reprobados,
         "sin_notas" => $sinNotas,
     ], 200);
+    }
+
+
+    public function filter(Request $request)
+{
+    // Iniciamos la consulta
+    $query = Estudiante::query();
+
+    // Filtramos por código
+    if ($request->has('cod')) {
+        $query->where('cod', $request->input('cod'));
+    }
+
+    // Filtramos por nombre
+    if ($request->has('nombres')) {
+        $query->where('nombres', 'like', '%' . $request->input('nombres') . '%');
+    }
+
+    // Filtramos por email
+    if ($request->has('email')) {
+        $query->where('email', 'like', '%' . $request->input('email') . '%');
+    }
+
+    // Filtramos por estudiantes aprobados
+    if ($request->has('estado') && $request->input('estado') == 'aprobado') {
+        $query->whereHas('notas', function ($query) {
+            $query->havingRaw('avg(nota) >= 3');
+        });
+    }
+
+    // Filtramos por estudiantes reprobados
+    if ($request->has('estado') && $request->input('estado') == 'reprobado') {
+        $query->whereHas('notas', function ($query) {
+            $query->havingRaw('avg(nota) < 3');
+        });
+    }
+
+    // Filtramos por estudiantes sin notas
+    if ($request->has('sin_notas') && $request->input('sin_notas') == 'true') {
+        $query->whereDoesntHave('notas');
+    }
+
+    // Filtramos por rango de notas
+    if ($request->has('rango_min') && $request->has('rango_max')) {
+        $query->whereHas('notas', function ($query) use ($request) {
+            $query->whereBetween('nota', [$request->input('rango_min'), $request->input('rango_max')]);
+        });
+    }
+
+    // Ejecutamos la consulta
+    $rows = $query->get();
+
+    // Verificamos si se encontraron resultados
+    if ($rows->isEmpty()) {
+        return response()->json(["msg" => "No se encontraron estudiantes con los parámetros solicitados"], 404);
+    }
+
+    // Si hay resultados, retornamos los datos
+    return response()->json(["data" => $rows], 200);
 }
+
 
 
 
