@@ -85,30 +85,21 @@ Accept: application/json
 DELETE http://127.0.0.1:8000/api/notas/2
 Accept: application/json
 
-
-
-### Listar las notas de un estudiante con promedio
-GET http://127.0.0.1:8000/api/notas/estudiante/9991
-Content-Type: application/json
-
 ### Filtrar notas por actividad
-GET http://127.0.0.1:8000/api/notas/filter?actividad=Proyecto
+GET http://127.0.0.1:8000/api/notas/filter?actividad=Prueba dos
 Content-Type: application/json
 
-### filtrar  por rango de notas
-GET http://127.0.0.1:8000/api/notas/filter?rango_min=2&rango_max=4
+### Filtrar notas por rango de valores
+GET http://127.0.0.1:8000/api/notas/filter?rango_min=2.0&rango_max=4.0
 Content-Type: application/json
-
-### filtrar notas por actividad y rango
-GET http://127.0.0.1:8000/api/notas/filter?actividad=Proyecto&rango_min=3&rango_max=5
-Content-Type: application/json
-
 
 ### Resumen de notas
 GET http://127.0.0.1:8000/api/notas/resumen
 Content-Type: application/json
 
-### Filtrar por código
+
+
+### Filtrar por código del estudiante
 GET http://127.0.0.1:8000/api/estudiantes/filter?cod=1111
 
 
