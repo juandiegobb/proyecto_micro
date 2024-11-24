@@ -9,7 +9,7 @@ POST http://127.0.0.1:8000/api/estudiantes
 Content-Type: application/json
 
 {
-  "cod": "9991",
+  "cod": "7777",
   "email": "usuarioprueba@email.com",
   "nombres": "usuario"
 }
@@ -17,25 +17,25 @@ Content-Type: application/json
 ###
 
 ### Obtener Estudiante por ID
-GET http://127.0.0.1:8000/api/estudiantes/9991
+GET http://127.0.0.1:8000/api/estudiantes/1111
 Content-Type: application/json
 
 ###
 
 ### Actualizar Estudiante
-PUT http://127.0.0.1:8000/api/estudiantes/1155
+PUT http://127.0.0.1:8000/api/estudiantes/7777
 Content-Type: application/json
 
 {
-    "cod": "1159",
-    "nombres": "Juan Castillo",
-    "email": "juandiego@email.com"
+    "cod": "1171",
+    "nombres": "JuanD Castillo",
+    "email": "juandiego17@email.com"
 }
 
 ###
 
 ### Eliminar Estudiante
-DELETE http://127.0.0.1:8000/api/estudiantes/5522
+DELETE http://127.0.0.1:8000/api/estudiantes/7777
 Content-Type: application/json
 
 ### Resumen de estudiantes
@@ -55,8 +55,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "actividad": "Proyecto prueba 2",
-  "nota": 2.0,
+  "actividad": "Proyecto prueba 5",
+  "nota": 3.0,
   "codEstudiante": 5522
 }
 

@@ -1,131 +1,201 @@
-const BASE_URL = 'http://127.0.0.1:8000/api';
+document.addEventListener("DOMContentLoaded", function () {
+    fetchStudents(); // Cargar estudiantes al inicio
+    fetchGeneralStatistics(); // Cargar estadísticas generales
+});
 
-// Variables globales
-let selectedStudentId = null;
+// Mostrar el formulario para agregar estudiantes
+function showAddForm() {
+    document.getElementById("form-title").innerText = "Agregar Estudiante";
+    document.getElementById("student-form").reset();
+    document.getElementById("form-modal").style.display = "block";
+}
 
-// Función para cargar los estudiantes en el dropdown
-function loadStudents() {
-    fetch(`${BASE_URL}/estudiantes`)
+// Cerrar el formulario/modal
+function closeForm() {
+    document.getElementById("form-modal").style.display = "none";
+}
+
+// Filtrar estudiantes por código, nombre, email, estado o rango de nota
+function filterStudents() {
+    const filterText = document.getElementById("filter").value.toLowerCase();
+    const rows = document.querySelectorAll("#students-table-body tr");
+    let found = false;
+
+    rows.forEach(row => {
+        const code = row.cells[0].innerText.toLowerCase();
+        const name = row.cells[1].innerText.toLowerCase();
+        const email = row.cells[2].innerText.toLowerCase();
+        const status = row.cells[4].innerText.toLowerCase();
+        const grade = row.cells[3].innerText.toLowerCase();
+
+        if (code.includes(filterText) || name.includes(filterText) || email.includes(filterText) || status.includes(filterText) || grade.includes(filterText)) {
+            row.style.display = "";
+            found = true;
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    // Mostrar mensaje si no hay resultados
+    const noResults = document.getElementById("no-results");
+    if (!found) {
+        noResults.style.display = "block";
+    } else {
+        noResults.style.display = "none";
+    }
+}
+
+// Obtener todos los estudiantes
+function fetchStudents() {
+    fetch("http://127.0.0.1:8000/api/estudiantes")
         .then(response => response.json())
         .then(data => {
-            const studentDropdown = document.getElementById('students-dropdown');
-            data.data.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.cod;
-                option.textContent = `${student.cod} - ${student.nombres}`;
-                studentDropdown.appendChild(option);
+            const students = data.data;
+            const tableBody = document.getElementById("students-table-body");
+            tableBody.innerHTML = "";
+
+            students.forEach(student => {
+                const status = student.promedio >= 3 ? "Aprobado" : (student.promedio ? "Reprobado" : "No hay nota");
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${student.cod}</td>
+                    <td>${student.nombres}</td>
+                    <td>${student.email}</td>
+                    <td>${student.promedio || "No hay nota"}</td>
+                    <td>${status}</td>
+                    <td class="actions">
+                        <button onclick="showEditForm(${student.id}, '${student.cod}', '${student.nombres}', '${student.email}')">Editar</button>
+                        <button onclick="deleteStudent(${student.id})">Eliminar</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
 
-            // Agregar evento para seleccionar estudiante
-            studentDropdown.addEventListener('change', event => {
-                selectedStudentId = event.target.value;
-                fetchStudentDetails(selectedStudentId);
-                fetchStudentGrades(selectedStudentId);
-            });
-        });
+            fetchGeneralStatistics();
+        })
+        .catch(error => console.error("Error al obtener estudiantes:", error));
 }
 
-// Función para obtener los detalles de un estudiante
-function fetchStudentDetails(studentId) {
-    fetch(`${BASE_URL}/estudiantes/${studentId}`)
-        .then(response => response.json())
-        .then(data => {
-            const studentInfo = document.getElementById('student-info');
-            const status = data.estado === 'aprobado' ? 'Aprobado' : 'Reprobado';
-            studentInfo.innerHTML = `
-                Código: ${data.cod} <br>
-                Nombre: ${data.nombres} <br>
-                Email: ${data.email} <br>
-                Estado: ${status} <br>
-                Promedio: ${data.promedio ? data.promedio.toFixed(2) : 'No hay nota'}
-            `;
-        });
+// Mostrar el formulario de edición
+function showEditForm(id, cod, nombres, email) {
+    document.getElementById("form-title").innerText = "Editar Estudiante";
+    document.getElementById("student-code").value = cod;
+    document.getElementById("student-code").dataset.id = id;
+    document.getElementById("student-name").value = nombres;
+    document.getElementById("student-email").value = email;
+    document.getElementById("form-modal").style.display = "block";
 }
 
-// Función para obtener las notas de un estudiante
-function fetchStudentGrades(studentId) {
-    fetch(`${BASE_URL}/notas?codEstudiante=${studentId}`)
-        .then(response => response.json())
-        .then(data => {
-            const gradesList = document.getElementById('grades-list');
-            gradesList.innerHTML = '';
-            data.data.forEach(grade => {
-                const gradeDiv = document.createElement('div');
-                gradeDiv.classList.add('grade-item');
-                gradeDiv.textContent = `Actividad: ${grade.actividad} - Nota: ${grade.nota}`;
-                
-                // Clasificar las notas
-                if (grade.nota <= 2) {
-                    gradeDiv.classList.add('low-grade');
-                } else if (grade.nota > 2 && grade.nota < 3) {
-                    gradeDiv.classList.add('medium-low-grade');
-                } else if (grade.nota >= 3 && grade.nota < 4) {
-                    gradeDiv.classList.add('medium-high-grade');
-                } else {
-                    gradeDiv.classList.add('high-grade');
-                }
-
-                gradesList.appendChild(gradeDiv);
-            });
-
-            updateGradesSummary(data.data);
-        });
-}
-
-// Función para actualizar el resumen de notas
-function updateGradesSummary(grades) {
-    const below3 = grades.filter(grade => grade.nota < 3).length;
-    const above3 = grades.filter(grade => grade.nota >= 3).length;
-
-    document.getElementById('below-3').textContent = below3;
-    document.getElementById('above-3').textContent = above3;
-}
-
-// Función para registrar o modificar una nota
-function handleNoteFormSubmit(event) {
+// Guardar o actualizar estudiante
+document.getElementById("student-form").addEventListener("submit", function (event) {
     event.preventDefault();
-    const activity = document.getElementById('activity').value;
-    const grade = parseFloat(document.getElementById('grade').value);
 
-    if (isNaN(grade) || grade < 0 || grade > 5) {
-        alert('La nota debe estar entre 0 y 5.');
+    const studentData = {
+        cod: document.getElementById("student-code").value,
+        nombres: document.getElementById("student-name").value,
+        email: document.getElementById("student-email").value
+    };
+
+    const studentId = document.getElementById("student-code").dataset.id;
+    if (studentId) {
+        updateStudent(studentId, studentData);
+    } else {
+        addStudent(studentData);
+    }
+
+    closeForm();
+});
+
+// Función para agregar estudiante
+function addStudent(studentData) {
+    if (!validateEmail(studentData.email)) {
+        showMessage("El email no es válido", true);
         return;
     }
 
-    const noteData = {
-        actividad: activity,
-        nota: grade,
-        codEstudiante: selectedStudentId
-    };
-
-    // Verificar si estamos creando o actualizando la nota
-    const noteId = document.getElementById('note-id') ? document.getElementById('note-id').value : null;
-    const url = noteId ? `${BASE_URL}/notas/${noteId}` : `${BASE_URL}/notas`;
-
-    fetch(url, {
-        method: noteId ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(noteData)
+    fetch("http://127.0.0.1:8000/api/estudiantes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(studentData)
     })
     .then(response => response.json())
-    .then(data => {
-        alert(noteId ? 'Nota actualizada' : 'Nota registrada');
-        fetchStudentGrades(selectedStudentId);
+    .then(() => {
+        showMessage("Estudiante agregado correctamente");
+        fetchStudents(); // Recargar la lista
     })
-    .catch(error => console.error('Error al registrar/modificar la nota:', error));
+    .catch(error => {
+        console.error("Error al agregar estudiante:", error);
+        showMessage("Error al agregar estudiante", true);
+    });
 }
 
-// Función para eliminar una nota
-function handleDeleteNote() {
-    const confirmDelete = confirm('¿Estás seguro de que quieres eliminar esta nota?');
-    if (confirmDelete && selectedStudentId) {
-        // Aquí se podría eliminar la nota seleccionada
+// Función para actualizar estudiante
+function updateStudent(studentId, studentData) {
+    if (!validateEmail(studentData.email)) {
+        showMessage("El email no es válido", true);
+        return;
+    }
+
+    fetch(`http://127.0.0.1:8000/api/estudiantes/${studentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(studentData)
+    })
+    .then(response => response.json())
+    .then(() => {
+        showMessage("Estudiante actualizado correctamente");
+        fetchStudents(); // Recargar la lista
+    })
+    .catch(error => {
+        console.error("Error al actualizar estudiante:", error);
+        showMessage("Error al actualizar estudiante", true);
+    });
+}
+
+// Función para eliminar estudiante
+function deleteStudent(studentId) {
+    if (confirm("¿Seguro que quieres eliminar este estudiante?")) {
+        fetch(`http://127.0.0.1:8000/api/estudiantes/${studentId}`, {
+            method: "DELETE"
+        })
+        .then(() => {
+            fetchStudents(); // Recargar la lista
+        })
+        .catch(error => console.error("Error al eliminar estudiante:", error));
     }
 }
 
-// Inicialización
-document.addEventListener('DOMContentLoaded', () => {
-    loadStudents();
-    document.getElementById('note-form').addEventListener('submit', handleNoteFormSubmit);
-    document.getElementById('delete-grade-button').addEventListener('click', handleDeleteNote);
-});
+// Función para mostrar mensajes de éxito
+function showMessage(message, isError = false) {
+    const messageElement = document.createElement("p");
+    messageElement.textContent = message;
+    messageElement.style.color = isError ? "red" : "green";
+    document.body.appendChild(messageElement);
+    setTimeout(() => {
+        messageElement.remove();
+    }, 3000);
+}
+
+// Recargar los estudiantes manualmente
+function reloadStudents() {
+    fetchStudents();
+}
+
+// Validación de email
+function validateEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
+// Función para mostrar estadísticas generales
+function fetchGeneralStatistics() {
+    fetch("http://127.0.0.1:8000/api/estudiantes/statistics")
+        .then(response => response.json())
+        .then(data => {
+            const stats = data.data;
+            document.getElementById("approved-count").innerText = stats.approved;
+            document.getElementById("failed-count").innerText = stats.failed;
+            document.getElementById("no-grade-count").innerText = stats.no_grade;
+        })
+        .catch(error => console.error("Error al obtener estadísticas:", error));
+}

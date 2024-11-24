@@ -1,61 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas de Estudiantes</title>
+    <title>Gestión de Estudiantes y Notas</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <header>
-        <h1>Notas de Estudiantes</h1>
+        <h1>Gestión de Estudiantes</h1>
+        <button onclick="showAddForm()">Agregar Estudiante</button>
+        <input type="text" id="filter" placeholder="Buscar estudiante por código, nombre o email" oninput="filterStudents()">
     </header>
 
-    <section id="students-section">
-        <h2>Selecciona un Estudiante</h2>
-        <select id="students-dropdown">
-            <!-- Lista de estudiantes cargados aquí -->
-        </select>
+    <section>
+        <h2>Estudiantes</h2>
+        <table id="students-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Nota Definitiva</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="students-table-body">
+                <!-- Aquí se agregarán los estudiantes dinámicamente -->
+            </tbody>
+        </table>
     </section>
 
-    <section id="student-details">
-        <h3>Detalles del Estudiante</h3>
-        <p id="student-info"></p>
+    <!-- Modal para agregar/editar estudiante -->
+    <div id="form-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="form-title">Agregar Estudiante</h2>
+            <form id="student-form">
+                <label for="student-code">Código:</label>
+                <input type="text" id="student-code" required>
+                <label for="student-name">Nombre:</label>
+                <input type="text" id="student-name" required>
+                <label for="student-email">Email:</label>
+                <input type="email" id="student-email" required>
+                <button type="submit">Guardar</button>
+                <button type="button" onclick="closeForm()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- <button onclick="reloadStudents()">Recargar Estudiantes</button>
+<p id="no-results" style="display: none; color: red;">No se encontraron estudiantes que coincidan con la búsqueda.</p> -->
+
+<section>
+    <h2>Estadísticas</h2>
+    <p>Total de estudiantes: <span id="total-students">0</span></p>
+    <p>Aprobados: <span id="approved-students">0</span></p>
+    <p>Pendientes: <span id="pending-students">0</span></p>
+    <p>Reprobados: <span id="failed-students">0</span></p>
+</section>
+
+<!-- Estadísticas Generales -->
+<section>
+    <h2>Estadísticas Generales</h2>
+    <p>Aprobados: <span id="approved-count">0</span></p>
+    <p>Reprobados: <span id="failed-count">0</span></p>
+    <p>Sin Notas: <span id="no-grade-count">0</span></p>
+</section>
+
+<!-- Sección de Notas -->
+<section id="notes-section" style="display:none;">
+    <h2>Notas del Estudiante</h2>
+    <div id="student-info">
+        <p><strong>Código:</strong> <span id="student-code"></span></p>
+        <p><strong>Nombre:</strong> <span id="student-name"></span></p>
+        <p><strong>Email:</strong> <span id="student-email"></span></p>
+        <p><strong>Estado:</strong> <span id="student-status"></span></p>
+        <p><strong>Promedio:</strong> <span id="student-average"></span></p>
+    </div>
+
+    <!-- Filtro de Notas -->
+    <input type="text" id="notes-filter" placeholder="Buscar por actividad..." oninput="filterNotes()">
+
+    <!-- Tabla de Notas -->
+    <table>
+        <thead>
+            <tr>
+                <th>Actividad</th>
+                <th>Nota</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="notes-table-body">
+            <!-- Aquí se agregarán las notas -->
+        </tbody>
+    </table>
+
+    <!-- Resúmenes de Notas -->
+    <section>
+        <h3>Resumen de Notas</h3>
+        <p>Notas menores a 3: <span id="below-3-count">0</span></p>
+        <p>Notas mayores o iguales a 3: <span id="above-3-count">0</span></p>
     </section>
 
-    <section id="grades-section">
-        <h3>Notas del Estudiante</h3>
-        <div id="grades-list">
-            <!-- Lista de notas cargada aquí -->
-        </div>
+    <button onclick="showAddNoteForm()">Agregar Nota</button>
+</section>
 
-        <!-- Filtros -->
-        <div id="filters">
-            <input type="text" id="filter-activity" placeholder="Filtrar por actividad">
-            <input type="number" id="filter-min-grade" placeholder="Nota mínima" step="0.01">
-            <input type="number" id="filter-max-grade" placeholder="Nota máxima" step="0.01">
-            <button id="filter-notes-button">Filtrar Notas</button>
-        </div>
+<!-- Formulario Modal de Estudiantes -->
+<div id="form-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeForm()">&times;</span>
+        <h2 id="form-title">Agregar Estudiante</h2>
+        <form id="student-form">
+            <label for="student-code">Código:</label>
+            <input type="text" id="student-code" required>
+            
+            <label for="student-name">Nombre:</label>
+            <input type="text" id="student-name" required>
 
-        <!-- Resumen de Notas -->
-        <div id="grades-summary">
-            <p><strong>Notas menores a 3:</strong> <span id="below-3">0</span></p>
-            <p><strong>Notas mayores o iguales a 3:</strong> <span id="above-3">0</span></p>
-        </div>
+            <label for="student-email">Email:</label>
+            <input type="email" id="student-email" required>
 
-        <!-- Registrar o Modificar Nota -->
-        <h3>Registrar/Modificar Nota</h3>
-        <form id="note-form">
-            <input type="text" id="activity" placeholder="Actividad" required>
-            <input type="number" id="grade" placeholder="Nota (0-5)" step="0.01" required>
-            <button type="submit">Registrar/Modificar Nota</button>
+            <button type="submit">Guardar</button>
         </form>
-    </section>
+    </div>
+</div>
 
-    <section id="delete-grade-section">
-        <h3>Eliminar Nota</h3>
-        <button id="delete-grade-button">Eliminar Nota</button>
-    </section>
+<!-- Formulario Modal de Notas -->
+<div id="note-form-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeNoteForm()">&times;</span>
+        <h2 id="note-form-title">Agregar Nota</h2>
+        <form id="note-form">
+            <label for="activity">Actividad:</label>
+            <input type="text" id="activity" required>
+
+            <label for="grade">Nota:</label>
+            <input type="number" id="grade" min="0" max="5" step="0.01" required>
+
+            <button type="submit">Guardar Nota</button>
+        </form>
+    </div>
+</div>
 
     <script src="js/app.js"></script>
 </body>

@@ -71,41 +71,18 @@ class EstudianteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Capturar los datos enviados
-        $dataBody = $request->all();
-
-        // Buscar el estudiante por ID
-        $estudiante = Estudiante::find($id);
-        if (!$estudiante) {
-            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no se encuentra
+        $dataBody = $request->all(); // Captura los datos enviados
+        $estudiante = Estudiante::find($id); // Buscar estudiante por ID
+        if (empty($estudiante)) {
+            return response()->json(["msg" => "Estudiante no encontrado"], 404); // Error 404 si no existe
         }
-
-        // Verificar si el código de estudiante ya existe (si no es el mismo estudiante)
-        $codExistente = Estudiante::where('cod', $dataBody['cod'])->where('id', '!=', $id)->first();
-        if ($codExistente) {
-            return response()->json(["msg" => "El codigo de estudiante ya existe."], 400); // Error 400 si el código ya existe
-        }
-
-        // Verificar si el email ya existe (si no es el mismo estudiante)
-        $emailExistente = Estudiante::where('email', $dataBody['email'])->where('id', '!=', $id)->first();
-        if ($emailExistente) {
-            return response()->json(["msg" => "El correo electronico ya está registrado."], 400); // Error 400 si el email ya existe
-        }
-
-        // Verificar el formato del email
-        if (!filter_var($dataBody['email'], FILTER_VALIDATE_EMAIL)) {
-            return response()->json(["msg" => "El formato del correo electrónico no es válido."], 400); // Error 400 si el formato del email es incorrecto
-        }
-
-        // Si las validaciones pasaron, actualizar el estudiante
         $estudiante->cod = $dataBody['cod'];
         $estudiante->nombres = $dataBody['nombres'];
         $estudiante->email = $dataBody['email'];
-        $estudiante->save(); // Actualiza el estudiante en la base de datos
-
-        return response()->json(["data" => $estudiante], 200); // Respuesta exitosa con los datos actualizados
+        $estudiante->save(); // Actualiza el estudiante
+        $data = ["data" => $estudiante];
+        return response()->json($data, 200); // Respuesta exitosa con datos
     }
-
     /**
      * Remove the specified resource from storage.
      */
